@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Typography Creator</title>
+  <style>
+    :root {
+      --bg-color: #1e1e1e;
+      --panel-bg: #2c2c2c;
+      --border-color: #444444;
+      --text-color: #ffffff;
+      --text-muted: #b3b3b3;
+      --accent-color: #0c8ce9;
+      --accent-hover: #149bf3;
+      --danger-color: #f24e1e;
+      --input-bg: #333333;
+      --input-focus: #444444;
+      --radius: 6px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-size: 11px;
+      line-height: 1.4;
+      height: 580px;
+      width: 400px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-color);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #777;
+    }
+
+    header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--panel-bg);
+    }
+
+    header svg {
+      width: 24px;
+      height: 24px;
+      fill: var(--accent-color);
+    }
+
+    .title-container h1 {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .title-container p {
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+
+    .content {
+      padding: 16px;
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .section-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    label {
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    /* Combobox styles */
+    .combobox-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .combobox-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .combobox-input {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 8px 30px 8px 10px;
+      font-size: 11px;
+      border-radius: var(--radius);
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .combobox-input:focus {
+      border-color: var(--accent-color);
+    }
+
+    .combobox-chevron {
+      position: absolute;
+      right: 10px;
+      pointer-events: none;
+      width: 10px;
+      height: 10px;
+      fill: var(--text-muted);
+      transition: transform 0.15s ease;
+    }
+
+    .combobox-container.open .combobox-chevron {
+      transform: rotate(180deg);
+    }
+
+    .combobox-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      width: 100%;
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      display: none;
+    }
+
+    .combobox-dropdown.show {
+      display: block;
+    }
+
+    .combobox-option {
+      padding: 8px 10px;
+      cursor: pointer;
+      transition: background 0.1s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .combobox-option:hover, .combobox-option.selected {
+      background: var(--accent-color);
+      color: white;
+    }
+
+    .combobox-option .styles-count {
+      font-size: 9px;
+      opacity: 0.6;
+    }
+
+    /* Font list layout */
+    .fonts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .font-item {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .font-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .font-item-title {
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    .remove-btn {
+      background: transparent;
+      border: none;
+      color: var(--danger-color);
+      cursor: pointer;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+
+    .remove-btn:hover {
+      background: rgba(242, 78, 30, 0.1);
+    }
+
+    .add-font-btn {
+      background: transparent;
+      border: 1px dashed var(--border-color);
+      color: var(--text-muted);
+      border-radius: var(--radius);
+      padding: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+
+    .add-font-btn:hover {
+      border-color: var(--accent-color);
+      color: var(--accent-color);
+    }
+
+    /* General Inputs */
+    select, input[type="number"], input[type="text"] {
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 8px 10px;
+      font-size: 11px;
+      border-radius: var(--radius);
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    select:focus, input[type="number"]:focus, input[type="text"]:focus {
+      border-color: var(--accent-color);
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .checkbox-group input {
+      accent-color: var(--accent-color);
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+    }
+
+    /* Weights Checklist */
+    .weights-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      background: var(--panel-bg);
+      padding: 10px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+    }
+
+    /* Preview Panel */
+    .preview-container {
+      background: #151515;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .preview-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      border-bottom: 1px solid #222;
+      padding-bottom: 8px;
+    }
+
+    .preview-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .preview-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: 9px;
+    }
+
+    .preview-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--text-color);
+    }
+
+    /* Footer */
+    footer {
+      padding: 16px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      gap: 12px;
+      background: var(--panel-bg);
+    }
+
+    button.primary {
+      flex: 1;
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 10px;
+      font-weight: 600;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    button.primary:hover {
+      background: var(--accent-hover);
+    }
+
+    button.secondary {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 10px 16px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    button.secondary:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* Utility */
+    .loading-state {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--border-color);
+      border-top-color: var(--accent-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loading" class="loading-state">
+    <div class="spinner"></div>
+    <div style="font-weight: 500; color: var(--text-muted);">Loading available fonts...</div>
+  </div>
+
+  <div id="main-content" style="display: none; height: 100%; flex-direction: column; overflow: hidden;">
+    <header>
+      <svg viewBox="0 0 24 24">
+        <path d="M9.5 4v2H11v12H9.5v2h5v-2H13V6h1.5V4h-5z M4 9v2h2v4.5C6 17.5 7.5 19 9.5 19h1v-2h-1c-.8 0-1.5-.7-1.5-1.5V11h2V9H4z M15.5 9v2h2v4.5c0 .8-.7 1.5-1.5 1.5h-1v2h1c2 0 3.5-1.5 3.5-3.5V11h2V9h-6z"/>
+      </svg>
+      <div class="title-container">
+        <h1>Typography Creator</h1>
+        <p>Create layout scales & register local text styles</p>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- Fonts Selection -->
+      <div>
+        <div class="section-title">Font Families</div>
+        <div class="fonts-list">
+          <div class="font-item">
+            <div class="font-item-header">
+              <span class="font-item-title">Primary Font (Headings)</span>
+            </div>
+            <div class="form-group">
+              <div class="combobox-container" id="primary-font-select"></div>
+            </div>
+          </div>
+
+          <div class="font-item">
+            <div class="font-item-header">
+              <span class="font-item-title">Secondary Font (Body / UI)</span>
+            </div>
+            <div class="form-group">
+              <div class="combobox-container" id="secondary-font-select"></div>
+            </div>
+          </div>
+
+          <div id="additional-fonts-container"></div>
+          <button type="button" class="add-font-btn" id="add-font-action">+ Add Additional Font Override</button>
+        </div>
+      </div>
+
+      <!-- Scale Config -->
+      <div>
+        <div class="section-title">Scale Settings</div>
+        <div class="font-item">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="base-size">Base Size (px)</label>
+              <input type="number" id="base-size" value="16" min="8" max="48">
+            </div>
+            <div class="form-group">
+              <label for="scale-ratio">Scale Ratio</label>
+              <select id="scale-ratio">
+                <option value="1.067">Minor Second (1.067)</option>
+                <option value="1.125" selected>Major Second (1.125)</option>
+                <option value="1.200">Minor Third (1.200)</option>
+                <option value="1.250">Major Third (1.250)</option>
+                <option value="1.333">Perfect Fourth (1.333)</option>
+                <option value="1.414">Augmented Fourth (1.414)</option>
+                <option value="1.500">Perfect Fifth (1.500)</option>
+                <option value="1.618">Golden Ratio (1.618)</option>
+                <option value="custom">Custom Ratio...</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" id="custom-ratio-container" style="display: none; margin-top: 8px;">
+            <label for="custom-ratio">Custom Scale Factor</label>
+            <input type="number" id="custom-ratio" value="1.2" step="0.001" min="1.001" max="3">
+          </div>
+        </div>
+      </div>
+
+      <!-- Weights configuration -->
+      <div>
+        <div class="section-title">Weights Selection</div>
+        <div class="weights-grid">
+          <label class="checkbox-group">
+            <input type="checkbox" class="weight-checkbox" value="Regular" checked>
+            <span>Regular</span>
+          </label>
+          <label class="checkbox-group">
+            <input type="checkbox" class="weight-checkbox" value="Medium" checked>
+            <span>Medium</span>
+          </label>
+          <label class="checkbox-group">
+            <input type="checkbox" class="weight-checkbox" value="SemiBold">
+            <span>SemiBold</span>
+          </label>
+          <label class="checkbox-group">
+            <input type="checkbox" class="weight-checkbox" value="Bold" checked>
+            <span>Bold</span>
+          </label>
+          <label class="checkbox-group">
+            <input type="checkbox" class="weight-checkbox" value="ExtraBold">
+            <span>ExtraBold</span>
+          </label>
+          <label class="checkbox-group">
+            <input type="checkbox" class="weight-checkbox" value="Black">
+            <span>Black</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Style naming & options -->
+      <div>
+        <div class="section-title">System Settings</div>
+        <div class="font-item">
+          <div class="form-group" style="margin-bottom: 8px;">
+            <label for="naming-prefix">Style Name Prefix</label>
+            <input type="text" id="naming-prefix" value="Brand" placeholder="e.g. Brand, System, Typography">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+            <label class="checkbox-group">
+              <input type="checkbox" id="save-local-styles" checked>
+              <span>Save as Local Text Styles inside Figma</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" id="generate-specimen" checked>
+              <span>Generate Visual Specimen Frame in Canvas</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview section -->
+      <div>
+        <div class="section-title">Scale Live Preview (H1 - Caption)</div>
+        <div class="preview-container" id="preview-list"></div>
+      </div>
+    </div>
+
+    <footer>
+      <button type="button" class="secondary" id="cancel-action">Cancel</button>
+      <button type="button" class="primary" id="generate-action">Generate System</button>
+    </footer>
+  </div>
+
+  <script>
+    let globalFonts = [];
+    let searchableSelects = [];
+    let customFontCount = 0;
+
+    // Standard Figma font fallbacks if none loaded
+    const fallbackFonts = ["Inter", "Roboto", "Helvetica", "Arial", "sans-serif"];
+
+    // Searchable Select Component Class
+    class SearchableSelect {
+      constructor(container, options, initialValue, onSelect) {
+        this.container = container;
+        this.options = options; // Array of grouped font objects { family, styles }
+        this.onSelect = onSelect;
+        this.selectedValue = initialValue;
+        this.isOpen = false;
+        
+        this.render();
+        this.bindEvents();
+      }
+
+      render() {
+        this.container.innerHTML = `
+          <div class="combobox-input-wrapper">
+            <input type="text" class="combobox-input" placeholder="Search system font..." value="${this.selectedValue}">
+            <svg class="combobox-chevron" viewBox="0 0 24 24">
+              <path d="M7 10l5 5 5-5H7z"/>
+            </svg>
+          </div>
+          <div class="combobox-dropdown"></div>
+        `;
+        
+        this.input = this.container.querySelector('.combobox-input');
+        this.dropdown = this.container.querySelector('.combobox-dropdown');
+        this.chevron = this.container.querySelector('.combobox-chevron');
+      }
+
+      bindEvents() {
+        // Toggle dropdown on input focus or chevron click
+        this.input.addEventListener('focus', () => this.openDropdown());
+        
+        // Hide dropdown on click outside
+        document.addEventListener('click', (e) => {
+          if (!this.container.contains(e.target)) {
+            this.closeDropdown();
+          }
+        });
+
+        // Search filtering
+        this.input.addEventListener('input', (e) => {
+          this.filterOptions(e.target.value);
+        });
+
+        // Handle typing entry directly
+        this.input.addEventListener('change', () => {
+          // If typed value is in options list, set it. Otherwise keep it.
+          const value = this.input.value;
+          const found = this.options.find(o => o.family.toLowerCase() === value.toLowerCase());
+          if (found) {
+            this.selectedValue = found.family;
+            this.input.value = found.family;
+            if (this.onSelect) this.onSelect(found);
+          }
+        });
+      }
+
+      openDropdown() {
+        this.isOpen = true;
+        this.container.classList.add('open');
+        this.dropdown.classList.add('show');
+        this.filterOptions(this.input.value);
+      }
+
+      closeDropdown() {
+        this.isOpen = false;
+        this.container.classList.remove('open');
+        this.dropdown.classList.remove('show');
+        
+        // Restore input value to last selected if invalid text was left
+        const found = this.options.find(o => o.family.toLowerCase() === this.input.value.toLowerCase());
+        if (!found && this.selectedValue) {
+          this.input.value = this.selectedValue;
+        }
+      }
+
+      filterOptions(query) {
+        this.dropdown.innerHTML = '';
+        const lowercaseQuery = query.toLowerCase();
+        
+        const filtered = this.options.filter(o => 
+          o.family.toLowerCase().includes(lowercaseQuery)
+        );
+
+        if (filtered.length === 0) {
+          this.dropdown.innerHTML = `<div class="combobox-option" style="color: var(--text-muted); cursor: default;">No fonts found</div>`;
+          return;
+        }
+
+        // Limit dropdown size for performance
+        const visibleList = filtered.slice(0, 100);
+
+        visibleList.forEach(opt => {
+          const isSelected = opt.family === this.selectedValue;
+          const optionEl = document.createElement('div');
+          optionEl.className = `combobox-option ${isSelected ? 'selected' : ''}`;
+          optionEl.innerHTML = `
+            <span>${opt.family}</span>
+            <span class="styles-count">${opt.styles.length} weights</span>
+          `;
+          
+          optionEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.selectedValue = opt.family;
+            this.input.value = opt.family;
+            this.closeDropdown();
+            if (this.onSelect) this.onSelect(opt);
+          });
+          
+          this.dropdown.appendChild(optionEl);
+        });
+      }
+
+      setValue(val) {
+        this.selectedValue = val;
+        this.input.value = val;
+      }
+
+      getValue() {
+        return this.selectedValue;
+      }
+    }
+
+    // Message receiver from figma controller
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      if (msg.type === 'fonts-loaded') {
+        globalFonts = msg.groupedFonts;
+        
+        // Hide loading state, show main content
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('main-content').style.display = 'flex';
+
+        initializeForm();
+      }
+    };
+
+    function initializeForm() {
+      // Find standard default fonts
+      let defaultPrimary = "Inter";
+      let defaultSecondary = "Inter";
+
+      const hasInter = globalFonts.some(f => f.family === "Inter");
+      const hasRoboto = globalFonts.some(f => f.family === "Roboto");
+      
+      if (!hasInter) {
+        if (hasRoboto) {
+          defaultPrimary = "Roboto";
+          defaultSecondary = "Roboto";
+        } else if (globalFonts.length > 0) {
+          defaultPrimary = globalFonts[0].family;
+          defaultSecondary = globalFonts[0].family;
+        }
+      }
+
+      // Initialize primary font selector
+      const primarySelect = new SearchableSelect(
+        document.getElementById('primary-font-select'),
+        globalFonts,
+        defaultPrimary,
+        () => updatePreview()
+      );
+      searchableSelects.push({ role: 'primary', selector: primarySelect });
+
+      // Initialize secondary font selector
+      const secondarySelect = new SearchableSelect(
+        document.getElementById('secondary-font-select'),
+        globalFonts,
+        defaultSecondary,
+        () => updatePreview()
+      );
+      searchableSelects.push({ role: 'secondary', selector: secondarySelect });
+
+      // Listen for custom additions
+      document.getElementById('add-font-action').addEventListener('click', addAdditionalFontOverride);
+
+      // Listen for input changes to update preview
+      document.getElementById('base-size').addEventListener('input', updatePreview);
+      
+      const scaleRatioSelect = document.getElementById('scale-ratio');
+      scaleRatioSelect.addEventListener('change', (e) => {
+        const customContainer = document.getElementById('custom-ratio-container');
+        if (e.target.value === 'custom') {
+          customContainer.style.display = 'flex';
+        } else {
+          customContainer.style.display = 'none';
+        }
+        updatePreview();
+      });
+      document.getElementById('custom-ratio').addEventListener('input', updatePreview);
+
+      document.querySelectorAll('.weight-checkbox').forEach(cb => {
+        cb.addEventListener('change', updatePreview);
+      });
+
+      // Initial preview render
+      updatePreview();
+    }
+
+    function addAdditionalFontOverride() {
+      customFontCount++;
+      const id = `custom-font-${customFontCount}`;
+      const container = document.getElementById('additional-fonts-container');
+      
+      const fontItem = document.createElement('div');
+      fontItem.className = 'font-item';
+      fontItem.id = `item-${id}`;
+      fontItem.innerHTML = `
+        <div class="font-item-header">
+          <span class="font-item-title">Override Font #${customFontCount}</span>
+          <button type="button" class="remove-btn" onclick="removeAdditionalFont('${id}')">
+            <svg style="width: 10px; height: 10px; fill: currentColor;" viewBox="0 0 24 24">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+            Remove
+          </button>
+        </div>
+        <div class="form-group">
+          <label style="margin-bottom: 4px;">Assign Font Family</label>
+          <div class="combobox-container" id="select-${id}"></div>
+        </div>
+        <div class="form-group">
+          <label style="margin-top: 4px;">Apply Override to Category</label>
+          <select id="role-${id}" class="custom-role-assignment">
+            <option value="code">Monospace / Code Styles</option>
+            <option value="accent">Accent Styles</option>
+            <option value="display">Display Styles (Override)</option>
+            <option value="headings">Headings (Override)</option>
+            <option value="body">Body (Override)</option>
+          </select>
+        </div>
+      `;
+      
+      container.appendChild(fontItem);
+
+      // Create SearchableSelect for the override
+      let defaultFont = globalFonts.length > 0 ? globalFonts[0].family : "Inter";
+      // Try to find a monospace font as default for override if they selected code
+      const monoFont = globalFonts.find(f => f.family.toLowerCase().includes('mono') || f.family.toLowerCase().includes('courier') || f.family.toLowerCase().includes('consolas'));
+      if (monoFont) {
+        defaultFont = monoFont.family;
+      }
+
+      const selector = new SearchableSelect(
+        document.getElementById(`select-${id}`),
+        globalFonts,
+        defaultFont,
+        () => updatePreview()
+      );
+
+      searchableSelects.push({
+        id: id,
+        role: 'custom',
+        selector: selector
+      });
+
+      document.getElementById(`role-${id}`).addEventListener('change', updatePreview);
+      updatePreview();
+    }
+
+    window.removeAdditionalFont = (id) => {
+      const element = document.getElementById(`item-${id}`);
+      if (element) {
+        element.remove();
+      }
+      
+      // Filter out selector from list
+      searchableSelects = searchableSelects.filter(s => s.id !== id);
+      updatePreview();
+    };
+
+    // Calculate scale factor and return all font sizes
+    function calculateScale() {
+      const baseSize = parseInt(document.getElementById('base-size').value, 10) || 16;
+      let ratio = parseFloat(document.getElementById('scale-ratio').value);
+      
+      if (isNaN(ratio)) {
+        // Must be custom
+        ratio = parseFloat(document.getElementById('custom-ratio').value) || 1.2;
+      }
+
+      // Generate sizes: Caption/Small Body up to Display 2
+      // We will produce:
+      // Display 1, Display 2 (large headers)
+      // H1, H2, H3, H4
+      // Body Large, Body Medium, Body Small
+      // Caption, Overline, Button
+      
+      // Level offsets relative to base size (Body Medium = index 0 = base size)
+      // -3: Overline
+      // -2: Caption
+      // -1: Body Small
+      //  0: Body Medium (Base)
+      //  1: Body Large / Button
+      //  2: H4
+      //  3: H3
+      //  4: H2
+      //  5: H1
+      //  6: Display 2
+      //  7: Display 1
+      
+      const levels = [
+        { key: 'display1', name: 'Display 1', index: 7, category: 'display' },
+        { key: 'display2', name: 'Display 2', index: 6, category: 'display' },
+        { key: 'h1', name: 'Heading 1', index: 5, category: 'headings' },
+        { key: 'h2', name: 'Heading 2', index: 4, category: 'headings' },
+        { key: 'h3', name: 'Heading 3', index: 3, category: 'headings' },
+        { key: 'h4', name: 'Heading 4', index: 2, category: 'headings' },
+        { key: 'bodyLg', name: 'Body Large', index: 1, category: 'body' },
+        { key: 'bodyMd', name: 'Body Medium', index: 0, category: 'body' },
+        { key: 'bodySm', name: 'Body Small', index: -1, category: 'body' },
+        { key: 'button', name: 'Button', index: 0, category: 'body' }, // Same size as body medium
+        { key: 'caption', name: 'Caption', index: -2, category: 'caption' },
+        { key: 'overline', name: 'Overline', index: -3, category: 'caption' }
+      ];
+
+      return levels.map(level => {
+        // Size = base * (ratio ^ index)
+        let size = baseSize * Math.pow(ratio, level.index);
+        size = Math.round(size * 10) / 10; // Round to 1 decimal place
+        if (size < 8) size = 8; // Min size safety
+
+        // Line-height multiplier based on size category (smaller size = more breathing room)
+        let lhMultiplier = 1.3;
+        if (level.category === 'display') {
+          lhMultiplier = 1.15;
+        } else if (level.category === 'headings') {
+          lhMultiplier = 1.25;
+        } else if (level.category === 'body') {
+          lhMultiplier = 1.5;
+        } else if (level.category === 'caption') {
+          lhMultiplier = 1.4;
+        }
+
+        // Align line height to 4px grid for professional developer layout
+        let lineHeight = Math.round((size * lhMultiplier) / 4) * 4;
+        if (lineHeight < size + 4) {
+          lineHeight = Math.ceil(size / 4) * 4 + 4; // Ensure line-height is always larger than font size
+        }
+
+        return {
+          ...level,
+          size,
+          lineHeight
+        };
+      });
+    }
+
+    // Determine font family for a category, checking overrides
+    function getFontForCategory(category) {
+      // Check overrides first (reverse order to get latest override)
+      const overrides = searchableSelects.filter(s => s.role === 'custom');
+      for (let i = overrides.length - 1; i >= 0; i--) {
+        const ov = overrides[i];
+        const assignedRole = document.getElementById(`role-${ov.id}`).value;
+        
+        if (assignedRole === category) {
+          return ov.selector.getValue();
+        }
+        
+        // Also map broad categories (e.g. if code is mapped, we can use it elsewhere or custom check)
+        if (assignedRole === 'code' && category === 'code') {
+          return ov.selector.getValue();
+        }
+        if (assignedRole === 'accent' && category === 'accent') {
+          return ov.selector.getValue();
+        }
+      }
+
+      // Default mappings
+      if (category === 'display' || category === 'headings') {
+        const prim = searchableSelects.find(s => s.role === 'primary');
+        return prim ? prim.selector.getValue() : 'Inter';
+      } else {
+        const sec = searchableSelects.find(s => s.role === 'secondary');
+        return sec ? sec.selector.getValue() : 'Inter';
+      }
+    }
+
+    // Update the live preview panel in UI
+    function updatePreview() {
+      const previewList = document.getElementById('preview-list');
+      if (!previewList) return;
+      
+      previewList.innerHTML = '';
+      const scaleItems = calculateScale();
+
+      // Show selected preview items (H1, H3, Body Medium, Caption)
+      const previewKeys = ['display2', 'h1', 'h3', 'bodyLg', 'bodyMd', 'caption'];
+      const filtered = scaleItems.filter(item => previewKeys.includes(item.key));
+
+      // Get selected weights to display in info
+      const checkedWeights = Array.from(document.querySelectorAll('.weight-checkbox:checked'))
+                                  .map(cb => cb.value);
+
+      filtered.forEach(item => {
+        const font = getFontForCategory(item.category);
+        
+        const previewItem = document.createElement('div');
+        previewItem.className = 'preview-item';
+        
+        previewItem.innerHTML = `
+          <div class="preview-meta">
+            <span>${item.name} (${font})</span>
+            <span>${item.size}px / ${item.lineHeight}px</span>
+          </div>
+          <div class="preview-text" style="font-family: '${font}', -apple-system, sans-serif; font-size: ${item.size}px; line-height: ${item.lineHeight}px;">
+            The quick brown fox jumps over the lazy dog
+          </div>
+        `;
+        
+        previewList.appendChild(previewItem);
+      });
+    }
+
+    // Send cancel event to code.ts
+    document.getElementById('cancel-action').addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
+    });
+
+    // Send generate settings to code.ts
+    document.getElementById('generate-action').addEventListener('click', () => {
+      const baseSize = parseInt(document.getElementById('base-size').value, 10) || 16;
+      const scaleRatio = document.getElementById('scale-ratio').value;
+      const customRatio = parseFloat(document.getElementById('custom-ratio').value) || 1.2;
+      const prefix = document.getElementById('naming-prefix').value.trim() || 'Brand';
+      const saveLocalStyles = document.getElementById('save-local-styles').checked;
+      const generateSpecimen = document.getElementById('generate-specimen').checked;
+
+      const checkedWeights = Array.from(document.querySelectorAll('.weight-checkbox:checked'))
+                                  .map(cb => cb.value);
+
+      if (checkedWeights.length === 0) {
+        alert("Please select at least one font weight to generate.");
+        return;
+      }
+
+      // Compile fonts mapping per category
+      const categories = ['display', 'headings', 'body', 'caption'];
+      const fontMapping = {};
+      categories.forEach(cat => {
+        fontMapping[cat] = getFontForCategory(cat);
+      });
+
+      // Include custom code and accent font families if registered
+      const overrides = searchableSelects.filter(s => s.role === 'custom');
+      overrides.forEach(ov => {
+        const assignedRole = document.getElementById(`role-${ov.id}`).value;
+        fontMapping[assignedRole] = ov.selector.getValue();
+      });
+
+      // Send to code.ts
+      parent.postMessage({
+        pluginMessage: {
+          type: 'generate-typography',
+          settings: {
+            baseSize,
+            scaleRatio: scaleRatio === 'custom' ? customRatio : parseFloat(scaleRatio),
+            prefix,
+            saveLocalStyles,
+            generateSpecimen,
+            weights: checkedWeights,
+            fontMapping
+          }
+        }
+      }, '*');
+    });
+
+  </script>
+</body>
+</html>
