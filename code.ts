@@ -6,6 +6,7 @@ interface GenerateSettings {
   prefix: string;
   saveLocalStyles: boolean;
   generateSpecimen: boolean;
+  specimenTheme: string;
   weights: string[];
   fontMapping: { [key: string]: string };
 }
@@ -94,7 +95,7 @@ async function safeLoadFont(fontName: FontName): Promise<FontName> {
 // Main logic triggered when Figma runs the plugin
 if (figma.editorType === 'figma' || figma.editorType === 'slides' || figma.editorType === 'figjam') {
   // Show UI with customized height
-  figma.showUI(__html__, { width: 400, height: 580, title: "Typography Creator" });
+  figma.showUI(__html__, { width: 400, height: 525, title: "Typography Creator", themeColors: true });
 
   // 1. Fetch system fonts and send to UI
   figma.listAvailableFontsAsync().then(fonts => {
@@ -209,6 +210,23 @@ if (figma.editorType === 'figma' || figma.editorType === 'slides' || figma.edito
 
         // Phase B: Generate Specimen Frame in current workspace
         if (settings.generateSpecimen) {
+          const isDarkSpecimen = settings.specimenTheme === 'dark';
+
+          // Color Palette configuration based on theme selection
+          const colors = {
+            boardBg: isDarkSpecimen ? { r: 0.08, g: 0.08, b: 0.08 } : { r: 1, g: 1, b: 1 },
+            titleText: isDarkSpecimen ? { r: 0.98, g: 0.98, b: 0.98 } : { r: 0.08, g: 0.08, b: 0.08 },
+            subtitleText: isDarkSpecimen ? { r: 0.6, g: 0.6, b: 0.6 } : { r: 0.4, g: 0.4, b: 0.4 },
+            detailsText: isDarkSpecimen ? { r: 0.45, g: 0.45, b: 0.45 } : { r: 0.6, g: 0.6, b: 0.6 },
+            divider: isDarkSpecimen ? { r: 0.18, g: 0.18, b: 0.18 } : { r: 0.85, g: 0.85, b: 0.85 },
+            rowDivider: isDarkSpecimen ? { r: 0.14, g: 0.14, b: 0.14 } : { r: 0.95, g: 0.95, b: 0.95 },
+            headerText: isDarkSpecimen ? { r: 0.45, g: 0.45, b: 0.45 } : { r: 0.55, g: 0.55, b: 0.55 },
+            metaLabel: isDarkSpecimen ? { r: 0.92, g: 0.92, b: 0.92 } : { r: 0.1, g: 0.1, b: 0.1 },
+            metaDesc: isDarkSpecimen ? { r: 0.5, g: 0.5, b: 0.5 } : { r: 0.5, g: 0.5, b: 0.5 },
+            previewText: isDarkSpecimen ? { r: 0.95, g: 0.95, b: 0.95 } : { r: 0.12, g: 0.12, b: 0.12 },
+            colorsText: isDarkSpecimen ? { r: 0.6, g: 0.6, b: 0.6 } : { r: 0.45, g: 0.45, b: 0.45 }
+          };
+
           // Load Inter Regular for metadata/headings
           const labelFont = await safeLoadFont({ family: 'Inter', style: 'Regular' });
           const labelBoldFont = await safeLoadFont({ family: 'Inter', style: 'Bold' });
@@ -225,13 +243,13 @@ if (figma.editorType === 'figma' || figma.editorType === 'slides' || figma.edito
           board.paddingRight = 48;
           board.paddingTop = 48;
           board.paddingBottom = 48;
-          board.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+          board.fills = [{ type: 'SOLID', color: colors.boardBg }];
           board.cornerRadius = 16;
           
           // Subtle frame drop shadow
           board.effects = [{
             type: 'DROP_SHADOW',
-            color: { r: 0, g: 0, b: 0, a: 0.05 },
+            color: isDarkSpecimen ? { r: 0, g: 0, b: 0, a: 0.25 } : { r: 0, g: 0, b: 0, a: 0.05 },
             offset: { x: 0, y: 4 },
             radius: 24,
             visible: true,
@@ -254,21 +272,21 @@ if (figma.editorType === 'figma' || figma.editorType === 'slides' || figma.edito
           title.fontName = labelBoldFont;
           title.fontSize = 32;
           title.characters = 'Typography system:';
-          title.fills = [{ type: 'SOLID', color: { r: 0.1, g: 0.1, b: 0.1 } }];
+          title.fills = [{ type: 'SOLID', color: colors.titleText }];
           header.appendChild(title);
 
           const subtitle = figma.createText();
           subtitle.fontName = labelFont;
           subtitle.fontSize = 14;
           subtitle.characters = 'Design system text styles that used in all scope of a project.';
-          subtitle.fills = [{ type: 'SOLID', color: { r: 0.4, g: 0.4, b: 0.4 } }];
+          subtitle.fills = [{ type: 'SOLID', color: colors.subtitleText }];
           header.appendChild(subtitle);
 
           const details = figma.createText();
           details.fontName = labelFont;
           details.fontSize = 11;
           details.characters = `Base Size: ${settings.baseSize}px   •   Scale Ratio: ${settings.scaleRatio}   •   Primary: ${settings.fontMapping.display}   •   Secondary: ${settings.fontMapping.body}`;
-          details.fills = [{ type: 'SOLID', color: { r: 0.6, g: 0.6, b: 0.6 } }];
+          details.fills = [{ type: 'SOLID', color: colors.detailsText }];
           header.appendChild(details);
 
           board.appendChild(header);
@@ -293,7 +311,7 @@ if (figma.editorType === 'figma' || figma.editorType === 'slides' || figma.edito
           col1Header.fontName = labelBoldFont;
           col1Header.fontSize = 10;
           col1Header.characters = 'OPTIONS';
-          col1Header.fills = [{ type: 'SOLID', color: { r: 0.55, g: 0.55, b: 0.55 } }];
+          col1Header.fills = [{ type: 'SOLID', color: colors.headerText }];
           col1Header.resize(220, 10);
           col1Header.textAutoResize = 'HEIGHT';
           gridHeaders.appendChild(col1Header);
@@ -302,7 +320,7 @@ if (figma.editorType === 'figma' || figma.editorType === 'slides' || figma.edito
           col2Header.fontName = labelBoldFont;
           col2Header.fontSize = 10;
           col2Header.characters = 'STYLE';
-          col2Header.fills = [{ type: 'SOLID', color: { r: 0.55, g: 0.55, b: 0.55 } }];
+          col2Header.fills = [{ type: 'SOLID', color: colors.headerText }];
           col2Header.layoutGrow = 1;
           col2Header.textAutoResize = 'HEIGHT';
           gridHeaders.appendChild(col2Header);
@@ -311,7 +329,7 @@ if (figma.editorType === 'figma' || figma.editorType === 'slides' || figma.edito
           col3Header.fontName = labelBoldFont;
           col3Header.fontSize = 10;
           col3Header.characters = 'APPLIED COLORS';
-          col3Header.fills = [{ type: 'SOLID', color: { r: 0.55, g: 0.55, b: 0.55 } }];
+          col3Header.fills = [{ type: 'SOLID', color: colors.headerText }];
           col3Header.resize(160, 10);
           col3Header.textAutoResize = 'HEIGHT';
           col3Header.textAlignHorizontal = 'RIGHT';
@@ -324,7 +342,7 @@ if (figma.editorType === 'figma' || figma.editorType === 'slides' || figma.edito
           headerDivider.name = 'Header Divider';
           headerDivider.layoutAlign = 'STRETCH';
           headerDivider.resize(board.width - board.paddingLeft - board.paddingRight, 1);
-          headerDivider.fills = [{ type: 'SOLID', color: { r: 0.85, g: 0.85, b: 0.85 } }];
+          headerDivider.fills = [{ type: 'SOLID', color: colors.divider }];
           board.appendChild(headerDivider);
 
           // 4. Generate Level Rows
@@ -383,14 +401,14 @@ if (figma.editorType === 'figma' || figma.editorType === 'slides' || figma.edito
               fontNameText.fontName = labelBoldFont;
               fontNameText.fontSize = 11;
               fontNameText.characters = `${familyName} ${actualStyle}`;
-              fontNameText.fills = [{ type: 'SOLID', color: { r: 0.1, g: 0.1, b: 0.1 } }];
+              fontNameText.fills = [{ type: 'SOLID', color: colors.metaLabel }];
               metaCard.appendChild(fontNameText);
 
               const sizeText = figma.createText();
               sizeText.fontName = labelFont;
               sizeText.fontSize = 10;
               sizeText.characters = `${size} / ${lineHeight}`;
-              sizeText.fills = [{ type: 'SOLID', color: { r: 0.5, g: 0.5, b: 0.5 } }];
+              sizeText.fills = [{ type: 'SOLID', color: colors.metaDesc }];
               metaCard.appendChild(sizeText);
 
               row.appendChild(metaCard);
@@ -417,7 +435,7 @@ if (figma.editorType === 'figma' || figma.editorType === 'slides' || figma.edito
               }
               
               textNode.characters = sampleText;
-              textNode.fills = [{ type: 'SOLID', color: { r: 0.12, g: 0.12, b: 0.12 } }];
+              textNode.fills = [{ type: 'SOLID', color: colors.previewText }];
               textNode.layoutGrow = 1;
               textNode.textAutoResize = 'HEIGHT'; // Wrap layout
 
@@ -443,8 +461,8 @@ if (figma.editorType === 'figma' || figma.editorType === 'slides' || figma.edito
               const colorsText = figma.createText();
               colorsText.fontName = labelFont;
               colorsText.fontSize = 11;
-              colorsText.characters = 'White 100 | Black 70';
-              colorsText.fills = [{ type: 'SOLID', color: { r: 0.45, g: 0.45, b: 0.45 } }];
+              colorsText.characters = isDarkSpecimen ? 'White 100 | Black 80' : 'White 100 | Black 70';
+              colorsText.fills = [{ type: 'SOLID', color: colors.colorsText }];
               colorsCard.appendChild(colorsText);
 
               row.appendChild(colorsCard);
@@ -456,7 +474,7 @@ if (figma.editorType === 'figma' || figma.editorType === 'slides' || figma.edito
               rowDivider.name = 'Row Divider';
               rowDivider.layoutAlign = 'STRETCH';
               rowDivider.resize(board.width - board.paddingLeft - board.paddingRight, 1);
-              rowDivider.fills = [{ type: 'SOLID', color: { r: 0.95, g: 0.95, b: 0.95 } }];
+              rowDivider.fills = [{ type: 'SOLID', color: colors.rowDivider }];
               board.appendChild(rowDivider);
             }
           }

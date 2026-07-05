@@ -5,17 +5,31 @@
   <title>Typography Creator</title>
   <style>
     :root {
-      --bg-color: #1e1e1e;
-      --panel-bg: #2c2c2c;
-      --border-color: #444444;
-      --text-color: #ffffff;
-      --text-muted: #b3b3b3;
-      --accent-color: #0c8ce9;
-      --accent-hover: #149bf3;
-      --danger-color: #f24e1e;
-      --input-bg: #333333;
-      --input-focus: #444444;
-      --radius: 6px;
+      /* Native Figma color tokens with standard fallback values */
+      --bg-color: var(--figma-color-bg, #ffffff);
+      --panel-bg: var(--figma-color-bg-secondary, #f5f5f5);
+      --border-color: var(--figma-color-border, #e6e6e6);
+      --text-color: var(--figma-color-text, #333333);
+      --text-muted: var(--figma-color-text-secondary, #808080);
+      --accent-color: var(--figma-color-bg-brand, #18a0fb);
+      --accent-hover: var(--figma-color-bg-brand-hover, #0c8ce9);
+      --danger-color: var(--figma-color-text-danger, #f24e1e);
+      --input-bg: var(--figma-color-bg, #ffffff);
+      --radius: 5px;
+    }
+
+    /* Handle native dark mode overrides when testing locally or if Figma variable fails */
+    html.figma-dark, @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-color: var(--figma-color-bg, #2c2c2c);
+        --panel-bg: var(--figma-color-bg-secondary, #1e1e1e);
+        --border-color: var(--figma-color-border, #444444);
+        --text-color: var(--figma-color-text, #ffffff);
+        --text-muted: var(--figma-color-text-secondary, #b3b3b3);
+        --accent-color: var(--figma-color-bg-brand, #0c8ce9);
+        --accent-hover: var(--figma-color-bg-brand-hover, #149bf3);
+        --input-bg: var(--figma-color-bg, #333333);
+      }
     }
 
     * {
@@ -30,7 +44,7 @@
       color: var(--text-color);
       font-size: 11px;
       line-height: 1.4;
-      height: 580px;
+      height: 525px;
       width: 400px;
       display: flex;
       flex-direction: column;
@@ -46,36 +60,11 @@
       background: var(--bg-color);
     }
     ::-webkit-scrollbar-thumb {
-      background: #555;
+      background: var(--border-color);
       border-radius: 3px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #777;
-    }
-
-    header {
-      padding: 16px;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--panel-bg);
-    }
-
-    header svg {
-      width: 24px;
-      height: 24px;
-      fill: var(--accent-color);
-    }
-
-    .title-container h1 {
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .title-container p {
-      color: var(--text-muted);
-      font-size: 10px;
+      background: var(--text-muted);
     }
 
     .content {
@@ -88,15 +77,12 @@
     }
 
     .section-title {
-      font-size: 10px;
+      font-size: 9px;
       text-transform: uppercase;
       font-weight: 700;
       letter-spacing: 0.5px;
       color: var(--text-muted);
       margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
 
     .form-group {
@@ -134,7 +120,7 @@
       background: var(--input-bg);
       border: 1px solid var(--border-color);
       color: var(--text-color);
-      padding: 8px 30px 8px 10px;
+      padding: 6px 30px 6px 10px;
       font-size: 11px;
       border-radius: var(--radius);
       outline: none;
@@ -147,10 +133,10 @@
 
     .combobox-chevron {
       position: absolute;
-      right: 10px;
+      right: 8px;
       pointer-events: none;
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
       fill: var(--text-muted);
       transition: transform 0.15s ease;
     }
@@ -164,13 +150,13 @@
       top: calc(100% + 4px);
       left: 0;
       width: 100%;
-      background: var(--panel-bg);
+      background: var(--bg-color);
       border: 1px solid var(--border-color);
       border-radius: var(--radius);
       max-height: 200px;
       overflow-y: auto;
       z-index: 100;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
       display: none;
     }
 
@@ -178,23 +164,50 @@
       display: block;
     }
 
+    .dropdown-section-header {
+      padding: 6px 10px 4px 10px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-color);
+      background: var(--panel-bg);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
     .combobox-option {
-      padding: 8px 10px;
+      padding: 6px 10px;
       cursor: pointer;
       transition: background 0.1s ease;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      color: var(--text-color);
     }
 
-    .combobox-option:hover, .combobox-option.selected {
+    .combobox-option:hover, 
+    .combobox-option.active-highlight {
       background: var(--accent-color);
       color: white;
     }
 
+    .combobox-option:hover .styles-count,
+    .combobox-option.active-highlight .styles-count,
+    .combobox-option.selected .styles-count {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .combobox-option.selected {
+      background: var(--panel-bg);
+      font-weight: 600;
+    }
+
     .combobox-option .styles-count {
       font-size: 9px;
-      opacity: 0.6;
+      color: var(--text-muted);
+      font-weight: 400;
     }
 
     /* Font list layout */
@@ -212,11 +225,11 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      animation: fadeIn 0.2s ease-out;
+      animation: fadeIn 0.15s ease-out;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
+      from { opacity: 0; transform: translateY(3px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -241,7 +254,7 @@
       align-items: center;
       gap: 3px;
       padding: 2px 4px;
-      border-radius: 4px;
+      border-radius: 3px;
     }
 
     .remove-btn:hover {
@@ -270,7 +283,7 @@
       background: var(--input-bg);
       border: 1px solid var(--border-color);
       color: var(--text-color);
-      padding: 8px 10px;
+      padding: 6px 10px;
       font-size: 11px;
       border-radius: var(--radius);
       outline: none;
@@ -291,8 +304,8 @@
 
     .checkbox-group input {
       accent-color: var(--accent-color);
-      width: 14px;
-      height: 14px;
+      width: 13px;
+      height: 13px;
       cursor: pointer;
     }
 
@@ -309,14 +322,14 @@
 
     /* Preview Panel */
     .preview-container {
-      background: #151515;
+      background: var(--panel-bg);
       border: 1px solid var(--border-color);
       border-radius: var(--radius);
       padding: 12px;
       display: flex;
       flex-direction: column;
       gap: 12px;
-      max-height: 200px;
+      max-height: 150px;
       overflow-y: auto;
     }
 
@@ -324,7 +337,7 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
-      border-bottom: 1px solid #222;
+      border-bottom: 1px solid var(--border-color);
       padding-bottom: 8px;
     }
 
@@ -349,11 +362,18 @@
 
     /* Footer */
     footer {
-      padding: 16px;
+      padding: 12px 16px;
       border-top: 1px solid var(--border-color);
       display: flex;
-      gap: 12px;
+      flex-direction: column;
+      gap: 10px;
       background: var(--panel-bg);
+      align-items: center;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+      color: var(--accent-hover);
     }
 
     button.primary {
@@ -361,7 +381,7 @@
       background: var(--accent-color);
       color: white;
       border: none;
-      padding: 10px;
+      padding: 8px;
       font-weight: 600;
       border-radius: var(--radius);
       cursor: pointer;
@@ -376,7 +396,7 @@
       background: transparent;
       border: 1px solid var(--border-color);
       color: var(--text-color);
-      padding: 10px 16px;
+      padding: 8px 16px;
       font-weight: 500;
       border-radius: var(--radius);
       cursor: pointer;
@@ -398,8 +418,8 @@
     }
 
     .spinner {
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
       border: 2px solid var(--border-color);
       border-top-color: var(--accent-color);
       border-radius: 50%;
@@ -419,16 +439,6 @@
   </div>
 
   <div id="main-content" style="display: none; height: 100%; flex-direction: column; overflow: hidden;">
-    <header>
-      <svg viewBox="0 0 24 24">
-        <path d="M9.5 4v2H11v12H9.5v2h5v-2H13V6h1.5V4h-5z M4 9v2h2v4.5C6 17.5 7.5 19 9.5 19h1v-2h-1c-.8 0-1.5-.7-1.5-1.5V11h2V9H4z M15.5 9v2h2v4.5c0 .8-.7 1.5-1.5 1.5h-1v2h1c2 0 3.5-1.5 3.5-3.5V11h2V9h-6z"/>
-      </svg>
-      <div class="title-container">
-        <h1>Typography Creator</h1>
-        <p>Create layout scales & register local text styles</p>
-      </div>
-    </header>
-
     <div class="content">
       <!-- Fonts Selection -->
       <div>
@@ -527,6 +537,13 @@
             <label for="naming-prefix">Style Name Prefix</label>
             <input type="text" id="naming-prefix" value="Brand" placeholder="e.g. Brand, System, Typography">
           </div>
+          <div class="form-group" style="margin-bottom: 8px;" id="specimen-theme-container">
+            <label for="specimen-theme">Visual Specimen Theme</label>
+            <select id="specimen-theme">
+              <option value="light">Light Mode (White Bg / Dark Text)</option>
+              <option value="dark">Dark Mode (Dark Bg / Light Text)</option>
+            </select>
+          </div>
           <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
             <label class="checkbox-group">
               <input type="checkbox" id="save-local-styles" checked>
@@ -548,8 +565,13 @@
     </div>
 
     <footer>
-      <button type="button" class="secondary" id="cancel-action">Cancel</button>
-      <button type="button" class="primary" id="generate-action">Generate System</button>
+      <div style="width: 100%; display: flex; gap: 12px;">
+        <button type="button" class="secondary" id="cancel-action">Cancel</button>
+        <button type="button" class="primary" id="generate-action">Generate System</button>
+      </div>
+      <div style="font-size: 10px; color: var(--text-muted); text-align: center;">
+        designed and built by <a href="https://nijin.site" target="_blank" style="color: var(--accent-color); text-decoration: none; font-weight: 500;">Nijin</a>
+      </div>
     </footer>
   </div>
 
@@ -558,10 +580,13 @@
     let searchableSelects = [];
     let customFontCount = 0;
 
-    // Standard Figma font fallbacks if none loaded
-    const fallbackFonts = ["Inter", "Roboto", "Helvetica", "Arial", "sans-serif"];
+    // List of popular/common fonts to surface at the top of the search dropdown
+    const popularFamilies = [
+      "Inter", "Roboto", "SF Pro", "SF Pro Display", "SF Pro Text", "Plus Jakarta Sans",
+      "Montserrat", "Poppins", "Open Sans", "Lato", "Helvetica Neue", "Helvetica", "Arial"
+    ];
 
-    // Searchable Select Component Class
+    // Searchable Select Component Class with Keyboard Navigation and Ranking
     class SearchableSelect {
       constructor(container, options, initialValue, onSelect) {
         this.container = container;
@@ -569,6 +594,7 @@
         this.onSelect = onSelect;
         this.selectedValue = initialValue;
         this.isOpen = false;
+        this.activeIndex = -1;
         
         this.render();
         this.bindEvents();
@@ -591,9 +617,6 @@
       }
 
       bindEvents() {
-        // Toggle dropdown on input focus or chevron click
-        this.input.addEventListener('focus', () => this.openDropdown());
-        
         // Hide dropdown on click outside
         document.addEventListener('click', (e) => {
           if (!this.container.contains(e.target)) {
@@ -601,14 +624,18 @@
           }
         });
 
-        // Search filtering
+        // Search filtering: only open and filter when user enters query
         this.input.addEventListener('input', (e) => {
-          this.filterOptions(e.target.value);
+          const query = e.target.value.trim();
+          if (query === '') {
+            this.closeDropdown();
+          } else {
+            this.openDropdown();
+          }
         });
 
-        // Handle typing entry directly
+        // Handle typing entry directly on change
         this.input.addEventListener('change', () => {
-          // If typed value is in options list, set it. Otherwise keep it.
           const value = this.input.value;
           const found = this.options.find(o => o.family.toLowerCase() === value.toLowerCase());
           if (found) {
@@ -617,9 +644,46 @@
             if (this.onSelect) this.onSelect(found);
           }
         });
+
+        // Keyboard navigation
+        this.input.addEventListener('keydown', (e) => {
+          if (!this.isOpen) {
+            if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && this.input.value.trim() !== '') {
+              this.openDropdown();
+              e.preventDefault();
+            }
+            return;
+          }
+
+          const optionsList = this.dropdown.querySelectorAll('.combobox-option:not([style*="cursor: default"])');
+          if (optionsList.length === 0) return;
+
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            this.activeIndex = (this.activeIndex + 1) % optionsList.length;
+            this.highlightOption(optionsList);
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            this.activeIndex = (this.activeIndex - 1 + optionsList.length) % optionsList.length;
+            this.highlightOption(optionsList);
+          } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (this.activeIndex >= 0 && this.activeIndex < optionsList.length) {
+              optionsList[this.activeIndex].click();
+            }
+          } else if (e.key === 'Escape') {
+            e.preventDefault();
+            this.closeDropdown();
+          }
+        });
       }
 
       openDropdown() {
+        const query = this.input.value.trim();
+        if (query === '') {
+          this.closeDropdown();
+          return;
+        }
         this.isOpen = true;
         this.container.classList.add('open');
         this.dropdown.classList.add('show');
@@ -630,37 +694,75 @@
         this.isOpen = false;
         this.container.classList.remove('open');
         this.dropdown.classList.remove('show');
+        this.activeIndex = -1;
         
-        // Restore input value to last selected if invalid text was left
-        const found = this.options.find(o => o.family.toLowerCase() === this.input.value.toLowerCase());
+        const value = this.input.value.trim();
+        if (value === '') {
+          this.selectedValue = '';
+          if (this.onSelect) this.onSelect(null);
+          return;
+        }
+
+        const found = this.options.find(o => o.family.toLowerCase() === value.toLowerCase());
         if (!found && this.selectedValue) {
           this.input.value = this.selectedValue;
         }
       }
 
-      filterOptions(query) {
-        this.dropdown.innerHTML = '';
-        const lowercaseQuery = query.toLowerCase();
-        
-        const filtered = this.options.filter(o => 
-          o.family.toLowerCase().includes(lowercaseQuery)
-        );
+      highlightOption(elements) {
+        elements.forEach((el, idx) => {
+          if (idx === this.activeIndex) {
+            el.classList.add('active-highlight');
+            el.scrollIntoView({ block: 'nearest' });
+          } else {
+            el.classList.remove('active-highlight');
+          }
+        });
+      }
 
-        if (filtered.length === 0) {
-          this.dropdown.innerHTML = `<div class="combobox-option" style="color: var(--text-muted); cursor: default;">No fonts found</div>`;
+      filterOptions(query) {
+        const lowercaseQuery = query.trim().toLowerCase();
+        
+        if (lowercaseQuery === '') {
+          this.dropdown.innerHTML = '';
+          this.closeDropdown();
           return;
         }
 
-        // Limit dropdown size for performance
-        const visibleList = filtered.slice(0, 100);
+        // Query present: Rank starts-with first, followed by contains (relevance ranking)
+        const startsWithQuery = [];
+        const containsQuery = [];
 
-        visibleList.forEach(opt => {
+        this.options.forEach(o => {
+          const name = o.family.toLowerCase();
+          if (name.startsWith(lowercaseQuery)) {
+            startsWithQuery.push(o);
+          } else if (name.includes(lowercaseQuery)) {
+            containsQuery.push(o);
+          }
+        });
+
+        const filtered = [...startsWithQuery, ...containsQuery];
+        this.renderList(filtered, []);
+      }
+
+      renderList(primaryList, secondaryList) {
+        this.dropdown.innerHTML = '';
+        this.activeIndex = -1;
+
+        if (primaryList.length === 0 && secondaryList.length === 0) {
+          this.dropdown.innerHTML = `<div class="combobox-option" style="color: var(--text-muted); cursor: default; padding: 8px 10px;">No fonts found</div>`;
+          return;
+        }
+
+        // Helper to append option element
+        const appendOption = (opt) => {
           const isSelected = opt.family === this.selectedValue;
           const optionEl = document.createElement('div');
           optionEl.className = `combobox-option ${isSelected ? 'selected' : ''}`;
           optionEl.innerHTML = `
             <span>${opt.family}</span>
-            <span class="styles-count">${opt.styles.length} weights</span>
+            <span class="styles-count">${opt.styles.length} styles</span>
           `;
           
           optionEl.addEventListener('click', (e) => {
@@ -672,7 +774,29 @@
           });
           
           this.dropdown.appendChild(optionEl);
-        });
+        };
+
+        // If secondaryList exists, it means we are in "Popular" + "Others" view
+        if (secondaryList.length > 0) {
+          if (primaryList.length > 0) {
+            const header = document.createElement('div');
+            header.className = 'dropdown-section-header';
+            header.textContent = 'Popular Fonts';
+            this.dropdown.appendChild(header);
+            primaryList.forEach(appendOption);
+          }
+
+          if (secondaryList.length > 0) {
+            const header = document.createElement('div');
+            header.className = 'dropdown-section-header';
+            header.textContent = 'All Fonts';
+            this.dropdown.appendChild(header);
+            secondaryList.slice(0, 100).forEach(appendOption);
+          }
+        } else {
+          // Simple flat list (filtered search results)
+          primaryList.slice(0, 100).forEach(appendOption);
+        }
       }
 
       setValue(val) {
@@ -799,7 +923,6 @@
 
       // Create SearchableSelect for the override
       let defaultFont = globalFonts.length > 0 ? globalFonts[0].family : "Inter";
-      // Try to find a monospace font as default for override if they selected code
       const monoFont = globalFonts.find(f => f.family.toLowerCase().includes('mono') || f.family.toLowerCase().includes('courier') || f.family.toLowerCase().includes('consolas'));
       if (monoFont) {
         defaultFont = monoFont.family;
@@ -839,30 +962,9 @@
       let ratio = parseFloat(document.getElementById('scale-ratio').value);
       
       if (isNaN(ratio)) {
-        // Must be custom
         ratio = parseFloat(document.getElementById('custom-ratio').value) || 1.2;
       }
 
-      // Generate sizes: Caption/Small Body up to Display 2
-      // We will produce:
-      // Display 1, Display 2 (large headers)
-      // H1, H2, H3, H4
-      // Body Large, Body Medium, Body Small
-      // Caption, Overline, Button
-      
-      // Level offsets relative to base size (Body Medium = index 0 = base size)
-      // -3: Overline
-      // -2: Caption
-      // -1: Body Small
-      //  0: Body Medium (Base)
-      //  1: Body Large / Button
-      //  2: H4
-      //  3: H3
-      //  4: H2
-      //  5: H1
-      //  6: Display 2
-      //  7: Display 1
-      
       const levels = [
         { key: 'display1', name: 'Display 1', index: 7, category: 'display' },
         { key: 'display2', name: 'Display 2', index: 6, category: 'display' },
@@ -873,18 +975,16 @@
         { key: 'bodyLg', name: 'Body Large', index: 1, category: 'body' },
         { key: 'bodyMd', name: 'Body Medium', index: 0, category: 'body' },
         { key: 'bodySm', name: 'Body Small', index: -1, category: 'body' },
-        { key: 'button', name: 'Button', index: 0, category: 'body' }, // Same size as body medium
+        { key: 'button', name: 'Button', index: 0, category: 'body' },
         { key: 'caption', name: 'Caption', index: -2, category: 'caption' },
         { key: 'overline', name: 'Overline', index: -3, category: 'caption' }
       ];
 
       return levels.map(level => {
-        // Size = base * (ratio ^ index)
         let size = baseSize * Math.pow(ratio, level.index);
-        size = Math.round(size * 10) / 10; // Round to 1 decimal place
-        if (size < 8) size = 8; // Min size safety
+        size = Math.round(size * 10) / 10;
+        if (size < 8) size = 8;
 
-        // Line-height multiplier based on size category (smaller size = more breathing room)
         let lhMultiplier = 1.3;
         if (level.category === 'display') {
           lhMultiplier = 1.15;
@@ -896,10 +996,9 @@
           lhMultiplier = 1.4;
         }
 
-        // Align line height to 4px grid for professional developer layout
         let lineHeight = Math.round((size * lhMultiplier) / 4) * 4;
         if (lineHeight < size + 4) {
-          lineHeight = Math.ceil(size / 4) * 4 + 4; // Ensure line-height is always larger than font size
+          lineHeight = Math.ceil(size / 4) * 4 + 4;
         }
 
         return {
@@ -910,9 +1009,7 @@
       });
     }
 
-    // Determine font family for a category, checking overrides
     function getFontForCategory(category) {
-      // Check overrides first (reverse order to get latest override)
       const overrides = searchableSelects.filter(s => s.role === 'custom');
       for (let i = overrides.length - 1; i >= 0; i--) {
         const ov = overrides[i];
@@ -922,7 +1019,6 @@
           return ov.selector.getValue();
         }
         
-        // Also map broad categories (e.g. if code is mapped, we can use it elsewhere or custom check)
         if (assignedRole === 'code' && category === 'code') {
           return ov.selector.getValue();
         }
@@ -931,7 +1027,6 @@
         }
       }
 
-      // Default mappings
       if (category === 'display' || category === 'headings') {
         const prim = searchableSelects.find(s => s.role === 'primary');
         return prim ? prim.selector.getValue() : 'Inter';
@@ -941,7 +1036,6 @@
       }
     }
 
-    // Update the live preview panel in UI
     function updatePreview() {
       const previewList = document.getElementById('preview-list');
       if (!previewList) return;
@@ -949,13 +1043,8 @@
       previewList.innerHTML = '';
       const scaleItems = calculateScale();
 
-      // Show selected preview items (H1, H3, Body Medium, Caption)
       const previewKeys = ['display2', 'h1', 'h3', 'bodyLg', 'bodyMd', 'caption'];
       const filtered = scaleItems.filter(item => previewKeys.includes(item.key));
-
-      // Get selected weights to display in info
-      const checkedWeights = Array.from(document.querySelectorAll('.weight-checkbox:checked'))
-                                  .map(cb => cb.value);
 
       filtered.forEach(item => {
         const font = getFontForCategory(item.category);
@@ -977,12 +1066,20 @@
       });
     }
 
-    // Send cancel event to code.ts
     document.getElementById('cancel-action').addEventListener('click', () => {
       parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
     });
 
-    // Send generate settings to code.ts
+    // Toggle specimen theme select visibility based on checkbox status
+    document.getElementById('generate-specimen').addEventListener('change', (e) => {
+      const themeContainer = document.getElementById('specimen-theme-container');
+      if (e.target.checked) {
+        themeContainer.style.display = 'flex';
+      } else {
+        themeContainer.style.display = 'none';
+      }
+    });
+
     document.getElementById('generate-action').addEventListener('click', () => {
       const baseSize = parseInt(document.getElementById('base-size').value, 10) || 16;
       const scaleRatio = document.getElementById('scale-ratio').value;
@@ -990,6 +1087,7 @@
       const prefix = document.getElementById('naming-prefix').value.trim() || 'Brand';
       const saveLocalStyles = document.getElementById('save-local-styles').checked;
       const generateSpecimen = document.getElementById('generate-specimen').checked;
+      const specimenTheme = document.getElementById('specimen-theme').value;
 
       const checkedWeights = Array.from(document.querySelectorAll('.weight-checkbox:checked'))
                                   .map(cb => cb.value);
@@ -999,21 +1097,29 @@
         return;
       }
 
-      // Compile fonts mapping per category
+      // Check if primary or secondary font values are empty/cleared
+      const primaryFont = getFontForCategory('headings');
+      const secondaryFont = getFontForCategory('body');
+      if (!primaryFont || primaryFont === '' || !secondaryFont || secondaryFont === '') {
+        alert("Please search and select both a Primary and Secondary font family.");
+        return;
+      }
+
       const categories = ['display', 'headings', 'body', 'caption'];
       const fontMapping = {};
       categories.forEach(cat => {
         fontMapping[cat] = getFontForCategory(cat);
       });
 
-      // Include custom code and accent font families if registered
       const overrides = searchableSelects.filter(s => s.role === 'custom');
       overrides.forEach(ov => {
         const assignedRole = document.getElementById(`role-${ov.id}`).value;
-        fontMapping[assignedRole] = ov.selector.getValue();
+        const ovVal = ov.selector.getValue();
+        if (ovVal && ovVal !== '') {
+          fontMapping[assignedRole] = ovVal;
+        }
       });
 
-      // Send to code.ts
       parent.postMessage({
         pluginMessage: {
           type: 'generate-typography',
@@ -1023,6 +1129,7 @@
             prefix,
             saveLocalStyles,
             generateSpecimen,
+            specimenTheme,
             weights: checkedWeights,
             fontMapping
           }
